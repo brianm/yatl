@@ -1,12 +1,12 @@
 use crate::store::{Store, StoreError};
 use crate::task::{Priority, Status, Task};
 use colored::*;
-use std::io::{self, Read};
+use std::io::{self, IsTerminal, Read};
 use std::path::Path;
 
 /// Read description from stdin if it's not a TTY (i.e., piped input)
 fn read_stdin_description() -> Option<String> {
-    if atty::isnt(atty::Stream::Stdin) {
+    if !io::stdin().is_terminal() {
         let mut buffer = String::new();
         if io::stdin().read_to_string(&mut buffer).is_ok() && !buffer.is_empty() {
             return Some(buffer.trim().to_string());
