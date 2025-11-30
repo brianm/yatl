@@ -35,7 +35,7 @@ src/
 ├── lib.rs            # Library exports
 ├── task.rs           # Task struct, Status, Priority enums
 ├── store.rs          # File-based task storage
-├── id.rs             # BLAKE3 hash-based ID generation
+├── id.rs             # Crockford base32 ID generation
 ├── config.rs         # Config file handling
 └── commands/         # Command implementations
     ├── mod.rs
@@ -50,7 +50,15 @@ src/
     ├── reopen.rs
     ├── ready.rs
     ├── log.rs
-    └── block.rs
+    ├── block.rs
+    ├── unblock.rs
+    ├── context.rs
+    ├── activity.rs
+    ├── tree.rs
+    ├── next.rs
+    ├── import.rs
+    ├── update.rs
+    └── describe.rs
 ```
 
 ### Data Storage
@@ -67,24 +75,25 @@ src/
 
 ### Task File Format
 Markdown with YAML frontmatter:
-- Required: `title`, `id`, `created`
-- Optional: `updated`, `author`, `priority`, `tags`, `blocked_by`
+- Required: `title`, `id`, `created`, `updated`
+- Optional: `author`, `priority`, `tags`, `blocked_by`, `blocks`, `parent`, `children`
 - Body: description + append-only `## Log` section
 - **Status is NOT stored in the file** - it's derived from the directory location
 
 ### Key Design Decisions
-- **Short hash IDs**: `bt-a1b2` format (BLAKE3 hash, 4 hex chars)
+- **Random IDs**: 8-character Crockford base32 IDs (40 bits of randomness)
 - **Directory-based status**: Status is determined by directory (open/, in-progress/, blocked/, closed/, cancelled/)
 - **Automatic blocking**: Tasks move to blocked/ when blockers added, back to open/ when resolved
 - **Union merge**: `.gitattributes` configures `merge=union` for log sections
-- **Prefix matching**: `bt show a1b2` finds `bt-a1b2.md`
+- **Prefix matching**: `bt show a1b2` finds tasks starting with `a1b2`
+- **Task hierarchies**: Parent/child relationships via `parent` and `children` fields
 
 ### Dependencies
 - `clap` - CLI parsing
 - `serde` + `serde_yaml` - YAML frontmatter
+- `serde_json` - JSON serialization
 - `chrono` - Timestamps
 - `colored` - Terminal colors
-- `blake3` - ID generation
 - `thiserror` - Error handling
 - `glob` - File matching
 - `rand` - Random bytes for IDs
