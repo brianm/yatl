@@ -296,6 +296,23 @@ bt update a1b2 --priority critical
 bt update a1b2 --add-tag documentation
 ```
 
+**Set task description/body:**
+```bash
+bt describe a1b2 "Full description of the task"
+bt describe a1b2 -    # Read from stdin
+echo "Description" | bt describe a1b2 -
+
+# Alternative using update command:
+bt update a1b2 --body "Description text"
+bt update a1b2 --body -    # Read from stdin
+```
+
+**When to use body vs log:**
+- **Body**: The authoritative, current description (editable, replaceable)
+- **Log**: Work history, progress notes, decisions (append-only)
+
+Use `bt describe` (or `bt update --body`) for implementation plans, acceptance criteria, or any content that should be the "current truth". Use `bt log` for progress updates and historical notes.
+
 **For complete CLI reference with all flags and examples, read:** [references/CLI_REFERENCE.md](references/CLI_REFERENCE.md)
 
 ## Dependency Management

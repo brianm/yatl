@@ -218,6 +218,15 @@ enum Commands {
         #[arg(long)]
         body: Option<String>,
     },
+
+    /// Set or replace the task body/description
+    Describe {
+        /// Task ID or prefix
+        id: String,
+
+        /// Description text (use "-" to read from stdin)
+        description: Vec<String>,
+    },
 }
 
 /// VCS directory markers that indicate a repository boundary
@@ -405,6 +414,24 @@ fn main() {
                         add_tag.as_deref(),
                         remove_tag.as_deref(),
                         body.as_deref(),
+                    )
+                }
+
+                Commands::Describe { id, description } => {
+                    let body = if description.len() == 1 && description[0] == "-" {
+                        "-".to_string()
+                    } else {
+                        description.join(" ")
+                    };
+                    commands::update(
+                        &root,
+                        &id,
+                        None,
+                        None,
+                        None,
+                        None,
+                        None,
+                        Some(body.as_str()),
                     )
                 }
             }
