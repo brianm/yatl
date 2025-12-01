@@ -1,4 +1,4 @@
-use crate::id::TaskId;
+use crate::prefix::PrefixResolver;
 use crate::store::{Store, StoreError};
 use crate::task::{Priority, Status};
 use chrono::{DateTime, Utc};
@@ -42,8 +42,9 @@ pub fn list(
         store.list_active()?
     };
 
-    // Collect all IDs for computing shortest unique prefixes
-    let all_ids: Vec<&TaskId> = tasks.iter().map(|(_, task)| task.id()).collect();
+    // Resolve shortest unique prefixes across ALL tasks (including closed/cancelled)
+    // This ensures displayed prefixes work with `bt edit`, which searches all directories
+    let resolver = PrefixResolver::new(&store)?;
 
     let mut json_tasks: Vec<TaskJson> = Vec::new();
     let mut count = 0;
@@ -89,7 +90,7 @@ pub fn list(
         }
 
         // Get shortest unique prefix for this task
-        let short_id = task.id().shortest_unique_prefix(&all_ids);
+        let short_id = resolver.shortest_prefix(task.id());
 
         if json {
             json_tasks.push(TaskJson {

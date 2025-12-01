@@ -1,4 +1,4 @@
-use crate::id::TaskId;
+use crate::prefix::PrefixResolver;
 use crate::store::{Store, StoreError};
 use chrono::{DateTime, Utc};
 use colored::*;
@@ -22,13 +22,14 @@ pub fn activity(path: &Path, limit: usize, all: bool) -> Result<(), StoreError> 
         store.list_active()?
     };
 
-    // Collect all IDs for prefix computation
-    let all_ids: Vec<&TaskId> = tasks.iter().map(|(_, task)| task.id()).collect();
+    // Resolve shortest unique prefixes across ALL tasks (including closed/cancelled)
+    // This ensures displayed prefixes work with `bt edit`, which searches all directories
+    let resolver = PrefixResolver::new(&store)?;
 
     let mut entries: Vec<LogEntry> = Vec::new();
 
     for (_, task) in &tasks {
-        let short_id = task.id().shortest_unique_prefix(&all_ids).to_string();
+        let short_id = resolver.shortest_prefix(task.id()).to_string();
 
         // Parse log entries from the task's log field
         // Format: ### 2025-11-26T23:41:41Z Author Name\n\nMessage content\n

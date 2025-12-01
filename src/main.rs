@@ -9,6 +9,7 @@ use std::os::unix::fs::MetadataExt;
 mod commands;
 mod config;
 mod id;
+mod prefix;
 mod store;
 mod task;
 

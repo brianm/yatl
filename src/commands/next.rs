@@ -1,4 +1,4 @@
-use crate::id::TaskId;
+use crate::prefix::PrefixResolver;
 use crate::store::{Store, StoreError};
 use crate::task::Priority;
 use colored::*;
@@ -34,9 +34,10 @@ pub fn next(path: &Path) -> Result<(), StoreError> {
     // Get the top task
     let (_, task) = &tasks[0];
 
-    // Collect all IDs for computing shortest unique prefix
-    let all_ids: Vec<&TaskId> = tasks.iter().map(|(_, t)| t.id()).collect();
-    let short_id = task.id().shortest_unique_prefix(&all_ids);
+    // Resolve shortest unique prefix across ALL tasks (including closed/cancelled)
+    // This ensures displayed prefix works with `bt edit`, which searches all directories
+    let resolver = PrefixResolver::new(&store)?;
+    let short_id = resolver.shortest_prefix(task.id());
 
     let priority_colored = match task.priority() {
         Priority::Critical => "critical".red(),

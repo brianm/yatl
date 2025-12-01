@@ -1,4 +1,5 @@
 use crate::id::TaskId;
+use crate::prefix::PrefixResolver;
 use crate::store::{Store, StoreError};
 use colored::*;
 use std::collections::{HashMap, HashSet};
@@ -16,14 +17,15 @@ pub fn tree(path: &Path) -> Result<(), StoreError> {
         return Ok(());
     }
 
-    // Collect all task IDs for prefix computation
-    let all_ids: Vec<&TaskId> = active_tasks.iter().map(|(_, t)| t.id()).collect();
+    // Resolve shortest unique prefixes across ALL tasks (including closed/cancelled)
+    // This ensures displayed prefixes work with `bt edit`, which searches all directories
+    let resolver = PrefixResolver::new(&store)?;
 
     // Build task info: id -> (title, short_id, blocked_by)
     let mut task_info: HashMap<TaskId, (String, String, Vec<TaskId>)> = HashMap::new();
 
     for (_, task) in &active_tasks {
-        let short_id = task.id().shortest_unique_prefix(&all_ids).to_string();
+        let short_id = resolver.shortest_prefix(task.id()).to_string();
         task_info.insert(
             task.id().clone(),
             (
