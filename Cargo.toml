@@ -16,3 +16,6 @@ thiserror = "1"
 glob = "0.3"
 rand = "0.8"
 serde_json = "1.0.145"
+
+[package.metadata.release]
+publish = false
