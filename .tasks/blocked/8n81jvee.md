@@ -17,12 +17,15 @@ Track file mtimes in index. On startup: stat files, compare mtimes, only re-pars
 ---
 ## Log
 
-### 2025-11-27T03:33:45Z Brian McCallister
+---
+# Log: 2025-11-27T03:33:45Z Brian McCallister
 
 Created task.
-### 2025-11-27T03:33:45Z Brian McCallister
+---
+# Log: 2025-11-27T03:33:45Z Brian McCallister
 
 Removed blocker: 7xjdgwz8
-### 2025-11-27T03:33:45Z Brian McCallister
+---
+# Log: 2025-11-27T03:33:45Z Brian McCallister
 
 Added blocker: 9cxrqv67

@@ -15,6 +15,7 @@ Add rusqlite dependency, create src/index.rs module, implement Index struct with
 ---
 ## Log
 
-### 2025-11-27T03:33:45Z Brian McCallister
+---
+# Log: 2025-11-27T03:33:45Z Brian McCallister
 
 Created task.

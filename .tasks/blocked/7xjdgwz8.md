@@ -17,12 +17,15 @@ Populate FTS5 table with title, body, log. New bt search command with --title-on
 ---
 ## Log
 
-### 2025-11-27T03:33:45Z Brian McCallister
+---
+# Log: 2025-11-27T03:33:45Z Brian McCallister
 
 Created task.
-### 2025-11-27T03:33:45Z Brian McCallister
+---
+# Log: 2025-11-27T03:33:45Z Brian McCallister
 
 Removed blocker: z9amtya4
-### 2025-11-27T03:33:45Z Brian McCallister
+---
+# Log: 2025-11-27T03:33:45Z Brian McCallister
 
 Added blocker: 9cxrqv67
