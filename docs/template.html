@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>yatl - Yet Another Task List</title>
+  <meta name="description" content="A minimal, file-based task tracker that lives in your git repo">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-code: #f6f8fa;
+      --text: #24292f;
+      --text-muted: #57606a;
+      --border: #d0d7de;
+      --accent: #0969da;
+      --accent-hover: #0550ae;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --bg-code: #161b22;
+        --text: #c9d1d9;
+        --text-muted: #8b949e;
+        --border: #30363d;
+        --accent: #58a6ff;
+        --accent-hover: #79c0ff;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      margin: 0;
+      padding: 2rem 1rem;
+    }
+
+    main {
+      max-width: 48rem;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    /* Hero styling for h1 and first paragraph */
+    h1 {
+      font-size: 3.5rem;
+      font-weight: 700;
+      margin: 0 0 0.5rem 0;
+      letter-spacing: -0.02em;
+    }
+
+    h1 + p {
+      font-size: 1.25rem;
+      color: var(--text-muted);
+      margin: 0 0 2.5rem 0;
+    }
+
+    h2 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      margin: 2.5rem 0 1rem 0;
+      padding-bottom: 0.3rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin: 2rem 0 0.75rem 0;
+    }
+
+    p {
+      margin: 0 0 1rem 0;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      color: var(--accent-hover);
+      text-decoration: underline;
+    }
+
+    ul, ol {
+      margin: 0 0 1rem 0;
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin: 0.25rem 0;
+    }
+
+    strong {
+      font-weight: 600;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.875em;
+      background: var(--bg-code);
+      padding: 0.2em 0.4em;
+      border-radius: 4px;
+    }
+
+    pre {
+      background: var(--bg-code);
+      padding: 1rem;
+      border-radius: 8px;
+      overflow-x: auto;
+      margin: 0 0 1rem 0;
+      border: 1px solid var(--border);
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      font-size: 0.875rem;
+      line-height: 1.5;
+    }
+
+    /* Tables */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0 0 1rem 0;
+    }
+
+    th, td {
+      text-align: left;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+    }
+
+    th {
+      background: var(--bg-code);
+      font-weight: 600;
+    }
+
+    tr:nth-child(even) {
+      background: var(--bg-code);
+    }
+
+    /* Blockquotes */
+    blockquote {
+      margin: 0 0 1rem 0;
+      padding: 0 1rem;
+      border-left: 3px solid var(--border);
+      color: var(--text-muted);
+    }
+
+    /* Horizontal rules */
+    hr {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+
+    /* Pandoc syntax highlighting (pygments style) */
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+
+    /* Token colors - light mode defaults */
+    .kw { color: #cf222e; font-weight: bold; } /* Keyword */
+    .dt { color: #953800; } /* DataType */
+    .dv { color: #0550ae; } /* DecVal */
+    .bn { color: #0550ae; } /* BaseN */
+    .fl { color: #0550ae; } /* Float */
+    .ch { color: #0a3069; } /* Char */
+    .st { color: #0a3069; } /* String */
+    .co { color: #6e7781; font-style: italic; } /* Comment */
+    .ot { color: #cf222e; } /* Other */
+    .al { color: #cf222e; font-weight: bold; } /* Alert */
+    .fu { color: #8250df; } /* Function */
+    .er { color: #cf222e; font-weight: bold; } /* Error */
+    .wa { color: #9a6700; font-weight: bold; } /* Warning */
+    .cn { color: #0550ae; } /* Constant */
+    .sc { color: #0a3069; } /* SpecialChar */
+    .vs { color: #0a3069; } /* VerbatimString */
+    .ss { color: #0a3069; } /* SpecialString */
+    .im { color: #cf222e; } /* Import */
+    .va { color: #24292f; } /* Variable */
+    .cf { color: #cf222e; font-weight: bold; } /* ControlFlow */
+    .op { color: #24292f; } /* Operator */
+    .bu { color: #8250df; } /* BuiltIn */
+    .ex { } /* Extension */
+    .pp { color: #cf222e; } /* Preprocessor */
+    .at { color: #116329; } /* Attribute */
+    .do { color: #6e7781; font-style: italic; } /* Documentation */
+    .an { color: #6e7781; font-weight: bold; font-style: italic; } /* Annotation */
+    .cv { color: #6e7781; font-weight: bold; font-style: italic; } /* CommentVar */
+    .in { color: #6e7781; font-weight: bold; font-style: italic; } /* Information */
+
+    @media (prefers-color-scheme: dark) {
+      .kw { color: #ff7b72; }
+      .dt { color: #ffa657; }
+      .dv { color: #79c0ff; }
+      .bn { color: #79c0ff; }
+      .fl { color: #79c0ff; }
+      .ch { color: #a5d6ff; }
+      .st { color: #a5d6ff; }
+      .co { color: #8b949e; }
+      .ot { color: #ff7b72; }
+      .al { color: #ff7b72; }
+      .fu { color: #d2a8ff; }
+      .er { color: #ff7b72; }
+      .wa { color: #d29922; }
+      .cn { color: #79c0ff; }
+      .sc { color: #a5d6ff; }
+      .vs { color: #a5d6ff; }
+      .ss { color: #a5d6ff; }
+      .im { color: #ff7b72; }
+      .va { color: #c9d1d9; }
+      .cf { color: #ff7b72; }
+      .op { color: #c9d1d9; }
+      .bu { color: #d2a8ff; }
+      .pp { color: #ff7b72; }
+      .at { color: #7ee787; }
+      .do { color: #8b949e; }
+      .an { color: #8b949e; }
+      .cv { color: #8b949e; }
+      .in { color: #8b949e; }
+    }
+
+    /* GitHub link */
+    .github-link {
+      position: absolute;
+      top: 0;
+      right: 0;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      text-decoration: none;
+    }
+
+    .github-link:hover {
+      color: var(--accent);
+    }
+
+    /* Footer */
+    footer {
+      margin-top: 4rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 0.875rem;
+    }
+
+    footer a {
+      color: var(--text-muted);
+    }
+
+    footer a:hover {
+      color: var(--accent);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 600px) {
+      html {
+        font-size: 14px;
+      }
+
+      h1 {
+        font-size: 2.5rem;
+      }
+
+      h1 + p {
+        font-size: 1.1rem;
+      }
+
+      body {
+        padding: 1.5rem 1rem;
+      }
+
+      pre {
+        padding: 0.75rem;
+        font-size: 0.8rem;
+      }
+
+      table {
+        font-size: 0.875rem;
+      }
+
+      th, td {
+        padding: 0.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <a href="https://github.com/brianm/yatl" class="github-link">GitHub</a>
+$body$
+  </main>
+  <footer>
+    Apache-2.0
+  </footer>
+</body>
+</html>
