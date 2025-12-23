@@ -104,6 +104,8 @@ Working on auth. Made some progress. More to do.
 
 **For complete compaction recovery workflow, read:** [references/WORKFLOWS.md](references/WORKFLOWS.md#compaction-survival)
 
+**For making complex technical tasks resumable with implementation details, read:** [references/RESUMABILITY.md](references/RESUMABILITY.md)
+
 ## Session Start Protocol
 
 **yatl is available when:**
@@ -513,7 +515,7 @@ Creating Task:
 - [ ] Blocked-by: Any dependencies (optional)
 ```
 
-**For detailed guidance on when to ask vs create, read:** [references/BOUNDARIES.md](references/BOUNDARIES.md)
+**For detailed guidance on when to ask vs create, task quality, and body vs log usage, read:** [references/TASK_CREATION.md](references/TASK_CREATION.md)
 
 ---
 
@@ -589,3 +591,5 @@ Fixed in commit abc1234. Need to add tests before closing.
 | [references/BOUNDARIES.md](references/BOUNDARIES.md) | Need detailed decision criteria for yatl vs TodoWrite |
 | [references/CLI_REFERENCE.md](references/CLI_REFERENCE.md) | Need complete command reference with all flags |
 | [references/WORKFLOWS.md](references/WORKFLOWS.md) | Need step-by-step workflows with checklists |
+| [references/TASK_CREATION.md](references/TASK_CREATION.md) | Need guidance on when to ask vs create tasks, task quality, body vs log usage |
+| [references/RESUMABILITY.md](references/RESUMABILITY.md) | Need guidance on making tasks resumable across sessions with implementation details |
